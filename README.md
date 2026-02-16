@@ -1,7 +1,9 @@
 # ColorsLabSpared
 
 ## Description
-The Colors application is a very simple web based program that runs overa  LAMP droplet. It contains a login function that every account will display a menu to add or search a color for that account.
+The Colors application is a very simple web based program that runs overa  LAMP droplet. It contains a login function that every account will display a menu to add or search a color for that account.  
+
+If its successful it should display at COP4331Spared.com
 
 ## Technologies Used
 - Visual Studio Code
