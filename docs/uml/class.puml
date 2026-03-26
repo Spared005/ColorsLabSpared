@@ -1,0 +1,67 @@
+@startuml ClassColorsLab
+skinparam classAttributeIconSize 10
+skinparam classFontSize 14
+
+class "Browser / code.js" as Browser {
+    - userId    : int
+    - firstName : string
+    - lastName  : string
+    - urlBase   : string
+    - extension : string
+    --
+    + doLogin()      : void
+    + saveCookie()   : void
+    + readCookie()   : void
+    + doLogout()     : void
+    + addColor()     : void
+    + searchColor()  : void
+}
+
+class "Login.php" as Login <<PHP Endpoint>> {
+    --
+    + getRequestInfo()      : array
+    + returnWithError()     : void
+    + returnWithInfo()      : void
+    + sendResultInfoAsJson(): void
+}
+
+class "SearchColors.php" as Search <<PHP Endpoint>> {
+    --
+    + getRequestInfo()      : array
+    + returnWithError()     : void
+    + returnWithInfo()      : void
+    + sendResultInfoAsJson(): void
+}
+
+class "AddColor.php" as AddColor <<PHP Endpoint>> {
+    --
+    + getRequestInfo()      : array
+    + returnWithError()     : void
+    + sendResultInfoAsJson(): void
+}
+
+class "Users" as UsersTable <<MySQL Table>> {
+    + ID        : int   <<PK>>
+    + Login     : varchar
+    + Password  : varchar
+    + firstName : varchar
+    + lastName  : varchar
+}
+
+class "Colors" as ColorsTable <<MySQL Table>> {
+    + ID     : int    <<PK>>
+    + Name   : varchar
+    + UserID : int    <<FK>>
+}
+
+Browser ..> Login     : POST /Login.php
+Browser ..> Search    : POST /SearchColors.php
+Browser ..> AddColor  : POST /AddColor.php
+
+Login    ..> UsersTable  : SELECT (validate login)
+Search   ..> ColorsTable : SELECT (search by name)
+AddColor ..> ColorsTable : INSERT (new color)
+
+UsersTable "1" --> "0..*" ColorsTable : owns
+
+@enduml
