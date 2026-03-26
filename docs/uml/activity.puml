@@ -1,0 +1,53 @@
+@startuml ActivityColorsLab
+skinparam activityFontSize 10
+skinparam swimlaneBorderThickness 2
+
+|Browser / code.js|
+start
+:Enter username & password;
+:Submit login (XHR POST → Login.php);
+
+|PHP API|
+:Login.php receives credentials;
+
+|MySQL DB|
+:SELECT from Users\nWHERE Login=? AND Password=?;
+
+|PHP API|
+if (User found?) then (yes)
+    :Return id, firstName, lastName;
+    |Browser / code.js|
+    :Save session cookie\n(firstName, lastName, userId);
+    :Redirect -> color.html;
+    fork 
+        :User searches for a color;
+        :XHR POST → SearchColors.php;
+        |PHP API|
+        :SearchColors.php receives\nsearch term + userId;
+        |MySQL DB|
+        :SELECT Name FROM Colors\nWHERE Name LIKE ? AND UserID=?;
+        |PHP API|
+        :Return JSON results array;
+        |Browser / code.js|
+        :Render color list in <p>;
+    fork again
+        :User types a color to add;
+        :XHR POST → AddColor.php;
+        |PHP API|
+        :AddColor.php receives\ncolor + userId;
+        |MySQL DB|
+        :INSERT INTO Colors\n(Name, UserID);
+        |Browser / code.js|
+        :Show "Color has been added";
+    end fork
+    :User clicks Log Out;
+    :Clear cookie;
+    :Redirect -> index.html;
+else (no)
+    |Browser / code.js|
+    :Show "User/Password combination incorrect";
+    :Return to login form;
+endif
+stop
+
+@enduml
