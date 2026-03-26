@@ -1,0 +1,30 @@
+@startuml UseCase_ColorsLabSpared
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+
+rectangle "ColorsLab System" {
+
+    actor "User" as user
+    actor "MySQL DB" as db
+    usecase "Log in"               as UC_Login
+    usecase "Save session cookie"  as UC_Cookie
+    usecase "Search color"         as UC_Search
+    usecase "Add color"            as UC_Add
+    usecase "Log out"              as UC_Logout
+}
+
+user --> UC_Login
+user --> UC_Search
+user --> UC_Add
+user --> UC_Logout
+
+UC_Cookie <. UC_Login : <<include>>
+
+UC_Login .. db  : validates credentials
+UC_Search .. db : returns color records
+UC_Add .. db    : inserts color record
+
+@enduml
+
