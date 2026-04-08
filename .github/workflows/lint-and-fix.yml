@@ -1,17 +1,16 @@
-#remade
 name: Lint & Fix
- 
+
 on:
   push:
     branches: ["**"]
   pull_request:
     branches: ["**"]
- 
+
 jobs:
   lint-fix:
     name: Lint & Auto-fix Codebase
     runs-on: ubuntu-latest
- 
+
     steps:
       # ── Checkout ──────────────────────────────────────────────────────────
       - name: Checkout repository
@@ -19,15 +18,13 @@ jobs:
         with:
           # Allow the workflow to push fixes back to the branch
           token: ${{ secrets.GITHUB_TOKEN }}
- 
+
       # ── Node.js (JS / CSS / HTML tooling) ─────────────────────────────────
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: "**/package*.json"
- 
+
       - name: Install Node dependencies
         run: |
           # Install linters/fixers globally so they work without a package.json
@@ -38,14 +35,14 @@ jobs:
             stylelint \
             stylelint-config-standard \
             htmlhint
- 
+
       # ── PHP tooling ────────────────────────────────────────────────────────
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
           tools: cs2pr, php-cs-fixer
- 
+
       # ── JavaScript — ESLint (fix) ──────────────────────────────────────────
       - name: ESLint — lint & auto-fix JS
         run: |
@@ -67,7 +64,7 @@ jobs:
           EOF
           fi
           eslint "**/*.js" --fix --ignore-pattern "node_modules/" --ignore-pattern "vendor/" || true
- 
+
       # ── CSS — Stylelint (fix) ──────────────────────────────────────────────
       - name: Stylelint — lint & auto-fix CSS
         run: |
@@ -83,7 +80,7 @@ jobs:
           EOF
           fi
           stylelint "**/*.css" --fix --ignore-path .gitignore || true
- 
+
       # ── HTML — HTMLHint (lint only; no auto-fix available) ─────────────────
       - name: HTMLHint — lint HTML
         run: |
@@ -103,7 +100,7 @@ jobs:
           EOF
           fi
           htmlhint "**/*.html" --ignore "node_modules/**,vendor/**" || true
- 
+
       # ── HTML / CSS / JS — Prettier (format & fix) ─────────────────────────
       - name: Prettier — format HTML, CSS & JS
         run: |
@@ -125,7 +122,7 @@ jobs:
             --ignore-path .gitignore \
             --ignore-unknown \
             2>/dev/null || true
- 
+
       # ── PHP — PHP-CS-Fixer (fix) ───────────────────────────────────────────
       - name: PHP-CS-Fixer — lint & auto-fix PHP
         run: |
@@ -135,7 +132,7 @@ jobs:
           $finder = PhpCsFixer\Finder::create()
               ->in(__DIR__)
               ->exclude(['vendor', 'node_modules']);
- 
+
           return (new PhpCsFixer\Config())
               ->setRules([
                   '@PSR12'                    => true,
@@ -149,7 +146,7 @@ jobs:
           EOF
           fi
           php-cs-fixer fix --allow-risky=yes || true
- 
+
       # ── Commit any auto-fixed changes back to the branch ──────────────────
       - name: Commit auto-fix changes
         uses: stefanzweifel/git-auto-commit-action@v5
