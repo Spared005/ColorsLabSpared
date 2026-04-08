@@ -25,9 +25,5 @@ jobs:
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: true
-          VALIDATE_JAVASCRIPT_PRETTIER: true
-          VALIDATE_PHP: true
-          VALIDATE_HTML_PRETTIER: true
-          VALIDATE_CSS_PRETTIER: true
           DEFAULT_BRANCH: "main"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
