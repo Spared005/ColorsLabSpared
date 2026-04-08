@@ -26,7 +26,7 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: true
 
-          
+          FIX_PHP: true
           FIX_JAVASCRIPT_PRETTIER: true
           FIX_CSS_PRETTIER: true
           FIX_HTML_PRETTIER: true
