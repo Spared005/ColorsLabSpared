@@ -1,0 +1,14 @@
+{
+  "name": "ColorsLabSpared",
+  "version": "1.0.0",
+  "description": "COLORS web application with CI testing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
