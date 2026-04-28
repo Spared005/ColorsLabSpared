@@ -175,10 +175,9 @@ jobs:
 
       # Install jest locally from packages.json
       - name: Install dependencies
-        run: npm install --prefix . --package-lock=false
-        working-directory: .
-        env:
-          NPM_CONFIG_PACKAGE_JSON: packages.json
+        run: |
+          cp packages.json package.json
+          npm install
 
       - name: Run Jest tests
         run: npx jest --ci --verbose --config jest.config.js
