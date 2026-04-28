@@ -1,4 +1,3 @@
-
 // ─── Helper functions mirrored from js/code.js ────────────────────────
 
 function isValidColorName(name) {
