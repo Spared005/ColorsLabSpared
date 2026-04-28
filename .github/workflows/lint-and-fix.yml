@@ -155,7 +155,7 @@ jobs:
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
 
-  # ── Job 2: Jest Tests ─────────────────────────────────────────────────────
+  # ── Job 2: Jest Tests ─────────────────────────────────────────────
   test:
     name: Run Jest Tests
     runs-on: ubuntu-latest
