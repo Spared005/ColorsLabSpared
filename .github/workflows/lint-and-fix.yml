@@ -1,4 +1,4 @@
-name: Lint & Fix
+name: Lint, Fix & Test
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
     branches: ["**"]
 
 jobs:
+  # ── Job 1: Lint & Auto-fix ────────────────────────────────────────────────
   lint-fix:
     name: Lint & Auto-fix Codebase
     runs-on: ubuntu-latest
@@ -14,14 +15,13 @@ jobs:
       contents: write
 
     steps:
-      # ── Checkout ──────────────────────────────────────────────────────────
+      # ── Checkout ────────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Allow the workflow to push fixes back to the branch
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── Node.js (JS / CSS / HTML tooling) ─────────────────────────────────
+      # ── Node.js ─────────────────────────────────────────────────────────────
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -29,7 +29,6 @@ jobs:
 
       - name: Install Node dependencies
         run: |
-          # Install linters/fixers globally so they work without a package.json
           npm install --global \
             eslint \
             @eslint/js \
@@ -38,17 +37,16 @@ jobs:
             stylelint-config-standard \
             htmlhint
 
-      # ── PHP tooling ────────────────────────────────────────────────────────
+      # ── PHP tooling ─────────────────────────────────────────────────────────
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
           tools: cs2pr, php-cs-fixer
 
-      # ── JavaScript — ESLint (fix) ──────────────────────────────────────────
+      # ── ESLint ──────────────────────────────────────────────────────────────
       - name: ESLint — lint & auto-fix JS
         run: |
-          # Create a minimal flat config if the project doesn't already have one
           if [ ! -f eslint.config.js ] && [ ! -f eslint.config.mjs ] && [ ! -f .eslintrc* ]; then
             cat > eslint.config.js << 'EOF'
           import js from "@eslint/js";
@@ -67,7 +65,7 @@ jobs:
           fi
           eslint "**/*.js" --fix --ignore-pattern "node_modules/" --ignore-pattern "vendor/" || true
 
-      # ── CSS — Stylelint (fix) ──────────────────────────────────────────────
+      # ── Stylelint ───────────────────────────────────────────────────────────
       - name: Stylelint — lint & auto-fix CSS
         run: |
           if [ ! -f .stylelintrc* ] && [ ! -f stylelint.config* ]; then
@@ -83,7 +81,7 @@ jobs:
           fi
           stylelint "**/*.css" --fix --ignore-path .gitignore || true
 
-      # ── HTML — HTMLHint (lint only; no auto-fix available) ─────────────────
+      # ── HTMLHint ────────────────────────────────────────────────────────────
       - name: HTMLHint — lint HTML
         run: |
           if [ ! -f .htmlhintrc ]; then
@@ -103,7 +101,7 @@ jobs:
           fi
           htmlhint "**/*.html" --ignore "node_modules/**,vendor/**" || true
 
-      # ── HTML / CSS / JS — Prettier (format & fix) ─────────────────────────
+      # ── Prettier ────────────────────────────────────────────────────────────
       - name: Prettier — format HTML, CSS & JS
         run: |
           if [ ! -f .prettierrc* ] && [ ! -f prettier.config* ]; then
@@ -125,7 +123,7 @@ jobs:
             --ignore-unknown \
             2>/dev/null || true
 
-      # ── PHP — PHP-CS-Fixer (fix) ───────────────────────────────────────────
+      # ── PHP-CS-Fixer ────────────────────────────────────────────────────────
       - name: PHP-CS-Fixer — lint & auto-fix PHP
         run: |
           if [ ! -f .php-cs-fixer.php ] && [ ! -f .php-cs-fixer.dist.php ]; then
@@ -149,14 +147,15 @@ jobs:
           fi
           php-cs-fixer fix --allow-risky=yes || true
 
-      # ── Commit any auto-fixed changes back to the branch ──────────────────
+      # ── Commit auto-fixed changes ────────────────────────────────────────────
       - name: Commit auto-fix changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "ci: auto-fix lint issues [skip ci]"
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
-  # ── Job 2: Jest Tests ─────────────────────────────────────────────────────
+
+# ── Job 2: Jest Tests ─────────────────────────────────────────────────────
   test:
     name: Run Jest Tests
     runs-on: ubuntu-latest
